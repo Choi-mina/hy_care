@@ -18,7 +18,7 @@ public class ChatService {
 
 
     @GetMapping("")
-    public String getChatResponse(Map<String, String> stt) {
+    public String getChatResponse(Map<Integer, String> stt) {
 
         // ChatGPT에게 질문
         return chatgptService.sendMessage(stt.values() + "병원 진료 대화 내용 3줄로 요약해줘.");

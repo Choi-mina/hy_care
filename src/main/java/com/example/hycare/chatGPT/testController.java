@@ -41,7 +41,7 @@ public class testController {
 
     //chat-gpt API 호출
      @PostMapping("/summary")
-     public String summary(@RequestBody Map<String, String> stt, @RequestParam String email) throws IOException {
+     public String summary(@RequestBody Map<Integer, String> stt, @RequestParam String email) throws IOException {
 
         summary = chatService.getChatResponse(stt);
 
@@ -88,7 +88,7 @@ public class testController {
              log.error("ChatGPT >>> S3 FAIL");
          }
 
-        return stt.get(summary);
+        return summary;
 
     }
 
