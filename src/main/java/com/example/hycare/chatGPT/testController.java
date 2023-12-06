@@ -94,6 +94,7 @@ public class testController {
 
     @PostMapping("/classification")
     public String classification(@RequestBody List<String> symptom) throws IOException {
+         log.info("ChatGPT classification API");
         String classification = chatService.getClassification(symptom);
 
         if(classification.contains("요."))

@@ -2,6 +2,7 @@ package com.example.hycare.controller;
 
 import ch.qos.logback.core.model.Model;
 import com.example.hycare.dto.DiagnosisDto;
+import com.example.hycare.dto.ResultDto;
 import com.example.hycare.entity.ResultEntity;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
@@ -143,5 +144,18 @@ public class WebController {
         }
         sessionValues.put("uuid", session.getAttribute("uuid"));
         return ResponseEntity.ok(sessionValues);
+    }
+
+    // 결과화면 창 이동
+    @PostMapping("/consult-result")
+    public String processData(@RequestBody ResultDto resultDto,
+                              org.springframework.ui.Model model) {
+
+        // 처리된 데이터를 모델에 추가
+        model.addAttribute("summary", resultDto.getSummary());
+        model.addAttribute("symptom", resultDto.getSymptom());
+
+        // 다른 페이지로 이동
+        return "consult/result";
     }
 }
