@@ -58,7 +58,7 @@ public class S3Controller {
     // S3에서 객체 url 조회
     @GetMapping("/s3-find/{id}")
     public ResultEntity<ChatGPTDto> findS3(@PathVariable("id") String id) {
-        String fileName = "static/" + id + "_chatGPT.json";
+        String fileName = "static/" + id + "/" + id + "_chatGPT.json";
         ChatGPTDto result;
         try {
             result = s3Service.findFile(fileName);

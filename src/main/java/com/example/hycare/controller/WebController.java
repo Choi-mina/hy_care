@@ -156,6 +156,6 @@ public class WebController {
         model.addAttribute("symptom", resultDto.getSymptom());
 
         // 다른 페이지로 이동
-        return "consult/result";
+        return "consult/result.html";
     }
 }
