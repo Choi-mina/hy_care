@@ -106,7 +106,7 @@
                 localStorage.setItem('email', data.email);
                 ajaxJsonCall('/get-uuid-session', null, function(result) {
                     session = result;
-                    location.href='http://18.183.4.163:3000/room?email=' + result.email;
+                    location.href='http://18.183.4.163:3000/room?email=' + result.email + "&loginDiv=" + result.loginDiv;
                 });
             }
         });
