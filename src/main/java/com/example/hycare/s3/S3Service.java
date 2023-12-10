@@ -26,8 +26,16 @@ public class S3Service {
     private String bucket;
     private final AmazonS3 s3Client;
 
+    // summary S3 저장
     public String upload(File uploadFile, String filePath, String uuid) {
         String fileName = filePath + "/" + uuid + "/" + uuid + "_chatGPT.json";   // S3에 저장될 파일 이름
+        String uploadImageUrl = putS3(uploadFile, fileName); // s3로 업로드
+        return uploadImageUrl;
+    }
+
+    // 결과지 S3 저장
+    public String uploadResult(File uploadFile, String filePath, String uuid) {
+        String fileName = filePath + "/" + uuid + "/" + uuid + "_result.png";   // S3에 저장될 파일 이름
         String uploadImageUrl = putS3(uploadFile, fileName); // s3로 업로드
         return uploadImageUrl;
     }

@@ -4,8 +4,10 @@ import ch.qos.logback.core.model.Model;
 import com.example.hycare.dto.DiagnosisDto;
 import com.example.hycare.dto.ResultDto;
 import com.example.hycare.entity.ResultEntity;
+import com.example.hycare.s3.S3Service;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.Banner;
@@ -14,6 +16,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -21,10 +24,12 @@ import java.util.Map;
 @Slf4j
 @Controller
 @CrossOrigin(origins = {"http://18.183.4.163:8080", "http://18.183.4.163:3000"},allowedHeaders = "*")
+@RequiredArgsConstructor
 public class WebController {
     @Value("${server.host.api}")
     private String baseUrl;
 
+    private final S3Service s3Service;
 
     // 홈화면 리다이렉트
     @RequestMapping("/")
@@ -148,14 +153,44 @@ public class WebController {
 
     // 결과화면 창 이동
     @PostMapping("/consult-result")
-    public String processData(@RequestBody ResultDto resultDto,
-                              org.springframework.ui.Model model) {
+    public String processData(@RequestBody ResultDto resultDto, org.springframework.ui.Model model) {
 
         // 처리된 데이터를 모델에 추가
         model.addAttribute("summary", resultDto.getSummary());
         model.addAttribute("symptom", resultDto.getSymptom());
 
-        // 다른 페이지로 이동
-        return "consult/result.html";
+        log.info(">>>>>>consult-result summary : " , resultDto.getSummary());
+        log.info(">>>>>>consult-result symptom : " , resultDto.getSymptom());
+
+        return "redirect:/result-page";
+
+    }
+
+    @RequestMapping("/result-page")
+    public String showResultPage() {
+        return "consult/result"; // result 결과를 보여줄 HTML 페이지의 이름
+    }
+
+    @RequestMapping("/result-save")
+    public void resultSave(HttpSession session, @RequestBody String filename) {
+        File file = new File(filename);
+        String uuid = session.getAttribute("uuid").toString();
+        String s3Url = s3Service.uploadResult(file, "static", uuid);
+
+        // DB 저장 API 호출
+        DiagnosisDto diagnosisDto = new DiagnosisDto();
+        diagnosisDto.setConsultationSheet(s3Url);
+        String url = baseUrl + "/save-result/" + uuid;
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity httpEntity = new HttpEntity<>(diagnosisDto, headers);
+        RestTemplate restTemplate = new RestTemplate();
+        ResponseEntity<DiagnosisDto> response = restTemplate.exchange(
+                url,
+                HttpMethod.POST,
+                httpEntity,
+                DiagnosisDto.class);
+
+        log.info("result save success");
     }
 }

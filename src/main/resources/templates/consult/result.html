@@ -70,7 +70,7 @@
 </head>
 <body>
 <th:block layout:fragment="header" th:include="@{fragments/header}"></th:block>
-<div class="frame-container">
+<div class="frame-container" id="result">
     <div class="result-div">
         <div class="result-chart">
             <table style="border-collapse:collapse; height: 100%; width:100%">
@@ -115,6 +115,33 @@
     <th:block layout:fragment="footer" th:include="@{fragments/footer}"></th:block>
 </body>
 <script>
-    }
+    $(function(){
+        // 캡쳐할 영역을 html2canvas로 캡쳐하여 canvas로 변환
+        html2canvas(document.querySelector("#result")).then(canvas => {
+            saveImg(canvas.toDataURL('image/png'),"../result.png");
+        });
+
+        // 캡쳐된 파일을 저장하는 함수
+        function saveImg(uri, filename) {
+            var link = document.createElement('a');
+            if (typeof link.download === 'string') {
+                link.href = uri;
+                link.download = filename;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                // 상담지 DB 저장을 위한 API 호출
+                ajaxJsonCall('/get-uuid-session', null, function(result) {
+                    session = result;
+                    ajaxJsonCall('/result-save', filename, function(data) {
+
+                    });
+                });
+            } else {
+                window.open(uri);
+            }
+        }
+    });
+
 </script>
 </html>

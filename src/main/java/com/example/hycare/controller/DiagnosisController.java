@@ -106,4 +106,18 @@ public class DiagnosisController {
         }
     }
 
+    // 결과지 DB에 저장
+    @PostMapping("/save-result/{uuid}")
+    public ResponseEntity<ResultEntity> saveResultDiagnosis (@RequestBody DiagnosisDto diagnosisDto, @PathVariable String uuid) {
+        try {
+            DiagnosisDto diagnosisDto1 = diagnosisService.findData(uuid);
+            diagnosisDto1.setConsultationSheet(diagnosisDto.getConsultationSheet());
+            diagnosisService.saveDiagnosis(diagnosisDto1, uuid);
+
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
 }
